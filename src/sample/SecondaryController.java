@@ -1,8 +1,14 @@
 package sample;
 
 import java.awt.Point;
+import java.io.IOException;
 import javafx.animation.TranslateTransition;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -13,63 +19,87 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 
 public class SecondaryController {
-  public final Point UP = new Point(0,-10);
-  public final Point DOWN = new Point(0,10);
-  public final Point LEFT = new Point(-10,0);
-  public final Point RIGHT = new Point(10,0);
+  private final Point UP = new Point(0,-10);
+  private final Point DOWN = new Point(0,10);
+  private final Point LEFT = new Point(-10,0);
+  private final Point RIGHT = new Point(10,0);
+
 
   public Pane gameBoard;
+  public Button playAgain;
   public Label gameOver;
 
-  public boolean started = false;
+  private boolean started = false;
 
-  public void animate(Snake snake, Grid grid, Color fruitColor, String name){
+  @FXML
+  void pressed(ActionEvent event) throws IOException {
+    FXMLLoader loader = new FXMLLoader((getClass().getResource("menu.fxml")));
+    Parent root = loader.load();
+    Stage stage = (Stage)gameBoard.getScene().getWindow();
+    stage.setScene(new Scene(root));
+    stage.setWidth(429+GameSettings.OFF_X);
+    stage.setHeight(499+GameSettings.OFF_Y);
+    stage.show();
+  }
+
+  private void animate(Snake snake, Grid grid, Color fruitColor, String name){
     snake.move(grid,gameBoard,fruitColor,this);
   }
 
-  public void gameOver(Snake snake){
+  void gameOver(Snake snake){
     Stage stage = (Stage) gameBoard.getScene().getWindow();
-    stage.setWidth(220);
-    stage.setHeight(100);
+    stage.setWidth(gameOver.getWidth()+GameSettings.OFF_X);
+    stage.setHeight(gameOver.getHeight()+playAgain.getHeight()+GameSettings.OFF_Y);
     gameOver.setText("Game over, " + snake.getName() + "! You got a score of " + snake.getLength() + ".");
     gameOver.setLayoutX(gameBoard.getLayoutX());
     gameOver.setLayoutY(gameBoard.getLayoutY());
+    playAgain.setLayoutX(gameBoard.getLayoutX());
+    playAgain.setLayoutY(gameBoard.getLayoutY()+gameOver.getHeight());
+    playAgain.toFront();
+    playAgain.setVisible(true);
     gameOver.toFront();
     gameOver.setVisible(true);
   }
 
-  public void playGame(Snake snake, Grid grid, Color fruitColor, int fruitAmt, String name){
+  void playGame(Snake snake, Grid grid, Color fruitColor, int fruitAmt, String name){
     snake.generate(grid,gameBoard);
     Scene scene = gameBoard.getScene();
-
     scene.addEventHandler(KeyEvent.KEY_PRESSED,key ->{
       switch(key.getCode()){
         case UP:
-          snake.setDirection(this.UP);
-          if(!started){
-            animate(snake,grid,fruitColor,name);
-            started = true;
+          if(snake.getDirection() != DOWN) {
+            snake.setDirection(this.UP);
+            if (!started) {
+              animate(snake, grid, fruitColor, name);
+              started = true;
+            }
           }
           break;
         case DOWN:
-          snake.setDirection(this.DOWN);
-          if(!started) {
-            animate(snake, grid, fruitColor,name);
-            started = true;
+          if(snake.getDirection() != UP) {
+            snake.setDirection(this.DOWN);
+            if (!started) {
+              animate(snake, grid, fruitColor, name);
+              started = true;
+            }
           }
           break;
         case LEFT:
-          snake.setDirection(this.LEFT);
-          if(!started) {
-            animate(snake, grid, fruitColor,name);
-            started = true;
+          if(snake.getDirection() != RIGHT) {
+            snake.setDirection(this.LEFT);
+            if (!started) {
+              animate(snake, grid, fruitColor, name);
+              started = true;
+            }
           }
           break;
         case RIGHT:
-          snake.setDirection(this.RIGHT);
-          if(!started) {
-            animate(snake, grid, fruitColor,name);
-            started = true;
+          if(snake.getDirection() != LEFT) {
+            snake.setDirection(this.RIGHT);
+            if (!started) {
+              animate(snake, grid, fruitColor, name);
+              started = true;
+            }
           }
           break;
         default:

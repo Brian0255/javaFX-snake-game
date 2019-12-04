@@ -15,20 +15,10 @@ public class Main extends Application {
         primaryStage.setTitle("Snake Game");
         primaryStage.setScene(new Scene(root, 429, 499));
         primaryStage.show();
+        GameSettings.OFF_X = primaryStage.getWidth() - 429;
+        GameSettings.OFF_Y = primaryStage.getHeight() - 499;
         primaryStage.setResizable(false);
     }
-
-    public void showGameBoard() throws Exception{
-        Stage newStage = new Stage();
-        newStage.setTitle("Snake Game");
-        FXMLLoader loader = new FXMLLoader((getClass().getResource("menu.fxml")));
-        Parent root = loader.load();
-        newStage.setScene(new Scene(root,500,500));
-        newStage.show();
-        newStage.setResizable(false);
-
-    }
-
 
     public static void main(String[] args) {
         launch(args);

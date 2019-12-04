@@ -10,8 +10,9 @@ import javafx.util.Duration;
 public class Snake {
   private Point direction;
   private Node head;
+  private int fruitsEaten;
+  private double animSpeed = 125;
   private int length;
-  private boolean alive;
   private Color bodyColor;
   private Color headColor;
   private final int PIXEL_SCALE = 10;
@@ -28,6 +29,10 @@ public class Snake {
     }
   }
 
+  public Point getDirection() {
+    return direction;
+  }
+
   public String getName() {
     return name;
   }
@@ -35,6 +40,7 @@ public class Snake {
   public Snake(Grid grid,int length, Color headColor, Color bodyColor, Pane gameBoard, String name){
     this.length = length;
     this.name = name;
+    this.fruitsEaten = 0;
     this.headColor = headColor;
     this.bodyColor = bodyColor;
     int offX = (((grid.getX()-10)/20))*10+5; //rounds to the nearest grid space in the middle even if grid sizes are even numbers by using integer division
@@ -46,25 +52,15 @@ public class Snake {
     Node head = new Node(new Point(x,y),null,c);
     grid.addSnake(head.position,head.circle);
     this.head = head;
-    this.alive = true;
   }
 
-
-
-  public Color getBodyColor() {
-    return bodyColor;
-  }
-
-  public void setBodyColor(Color bodyColor) {
-    this.bodyColor = bodyColor;
-  }
-
-  public Color getHeadColor() {
-    return headColor;
-  }
-
-  public void setHeadColor(Color headColor) {
-    this.headColor = headColor;
+  private void eatFruit(){
+    ++this.fruitsEaten;
+    //if snake eats 5 fruit game speeds up by current anim speed + 10%
+    if(this.fruitsEaten == 5){
+      this.fruitsEaten = 0;
+      animSpeed = animSpeed - animSpeed/10;
+    }
   }
 
   public void generate(Grid grid, Pane gameBoard){
@@ -79,10 +75,6 @@ public class Snake {
       prev.next = node;
       prev = prev.next;
     }
-  }
-
-  public Point getDirection() {
-    return direction;
   }
 
   public void setDirection(Point direction) {
@@ -106,7 +98,7 @@ public class Snake {
   private void moveHelper(Node node, Point newPosition,Grid grid, Pane gameBoard, Color fruitColor, SecondaryController controller){
     Point temp = node.position;
     grid.removePoint(temp);
-    TranslateTransition anim = new TranslateTransition(Duration.millis(100),node.circle);
+    TranslateTransition anim = new TranslateTransition(Duration.millis(this.animSpeed),node.circle);
     anim.setByX(newPosition.x-temp.x);
     anim.setByY(newPosition.y-temp.y);
     anim.play();
@@ -137,6 +129,7 @@ public class Snake {
     } else {
       if (grid.get(next) != null) {
         if (grid.get(next).getType().equals("apple")) {
+          this.eatFruit();
           Circle add = grid.get(next).getCircle();
           add.setFill(headColor);
           head.circle.setFill(bodyColor);
@@ -152,7 +145,7 @@ public class Snake {
           controller.gameOver(this);
         }
       } else {
-        TranslateTransition anim = new TranslateTransition(Duration.millis(100), head.circle);
+        TranslateTransition anim = new TranslateTransition(Duration.millis(this.animSpeed), head.circle);
         anim.setByX(direction.x);
         anim.setByY(direction.y);
         anim.play();
