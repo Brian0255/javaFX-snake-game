@@ -62,6 +62,7 @@ public class SecondaryController {
   }
 
   void playGame(Snake snake, Grid grid, Color fruitColor, int fruitAmt, String name){
+    snake.setDirection(LEFT);
     snake.generate(grid,gameBoard);
     Scene scene = gameBoard.getScene();
     scene.addEventHandler(KeyEvent.KEY_PRESSED,key ->{
