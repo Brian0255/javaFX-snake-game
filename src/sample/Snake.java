@@ -1,5 +1,6 @@
 package sample;
 
+import javafx.animation.Animation;
 import javafx.animation.TranslateTransition;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
